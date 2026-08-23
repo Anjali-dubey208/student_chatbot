@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log in — Campus Desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="brand"><span class="brand-mark">C</span> Campus Desk</div>
+      <h2>Welcome back</h2>
+      <p class="sub">Log in to continue to your chatbot.</p>
+
+      {% if error %}
+        <div class="flash flash-error">{{ error }}</div>
+      {% endif %}
+
+      <form method="POST" action="{{ url_for('login') }}">
+        <div class="field">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required autofocus>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Log in</button>
+      </form>
+
+      <p class="switch-line">Don't have an account? <a href="{{ url_for('signup') }}">Sign up</a></p>
+    </div>
+  </div>
+</body>
+</html>

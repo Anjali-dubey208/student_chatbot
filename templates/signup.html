@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign up — Campus Desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="brand"><span class="brand-mark">C</span> Campus Desk</div>
+      <h2>Create your account</h2>
+      <p class="sub">Takes less than a minute.</p>
+
+      {% if error %}
+        <div class="flash flash-error">{{ error }}</div>
+      {% endif %}
+
+      <form method="POST" action="{{ url_for('signup') }}">
+        <div class="field">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required autofocus>
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required minlength="6">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Sign up</button>
+      </form>
+
+      <p class="switch-line">Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+    </div>
+  </div>
+</body>
+</html>

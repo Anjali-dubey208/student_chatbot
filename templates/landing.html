@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Desk — Student Support</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <section class="hero">
+    <div class="nav-row">
+      <div class="brand"><span class="brand-mark">C</span> Campus Desk</div>
+      <a href="#access" class="btn btn-ghost">Sign in</a>
+    </div>
+
+    <div class="hero-content">
+      <span class="eyebrow">Student Support Chatbot</span>
+      <h1>Answers on admissions, exams<br>and fees — <em>no queue required.</em></h1>
+      <p class="lede">
+        Campus Desk is a study companion that knows your institution's courses,
+        deadlines and placement records, and answers in seconds, day or night.
+      </p>
+      <div class="hero-ctas">
+        <a href="#access" class="btn btn-primary">Get started</a>
+        <a href="#access" class="btn btn-ghost">I already have an account</a>
+      </div>
+
+      <div class="chip-row">
+        <span class="chip">Admissions</span>
+        <span class="chip">Exams</span>
+        <span class="chip">Fees</span>
+        <span class="chip">Courses</span>
+        <span class="chip">Placements</span>
+        <span class="chip">Study help</span>
+      </div>
+    </div>
+
+    <a href="#access" class="scroll-cue">
+      <span>Scroll to sign in</span>
+      <span class="arrow">&#8595;</span>
+    </a>
+  </section>
+
+  <section class="auth-section" id="access">
+    <div class="auth-split">
+      <div class="auth-panel">
+        <span class="eyebrow">Returning student</span>
+        <h2>Log in</h2>
+        <p>Pick up where you left off — your questions, saved and ready.</p>
+        <a href="{{ url_for('login') }}" class="btn btn-dark btn-block">Log in</a>
+      </div>
+      <div class="auth-panel">
+        <span class="eyebrow">New here</span>
+        <h2>Create an account</h2>
+        <p>Set up your account in under a minute and start asking questions right away.</p>
+        <a href="{{ url_for('signup') }}" class="btn btn-primary btn-block">Sign up</a>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>

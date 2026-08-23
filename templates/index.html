@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Desk — Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="chat-page">
+
+    <div class="chat-topbar">
+      <div class="brand"><span class="brand-mark">C</span> Campus Desk</div>
+      <div class="who">
+        Signed in as <strong>{{ username }}</strong>
+        <a href="#" class="logout-link" onclick="clearChat(event)">Clear chat</a>
+        <a href="{{ url_for('logout') }}" class="logout-link">Log out</a>
+      </div>
+    </div>
+
+    <div class="chat-wrap">
+      <div class="chat-shell">
+        <h1>Hi {{ username }}, what do you need?</h1>
+        <p class="sub">Ask about admissions, exams, fees, courses or placements.</p>
+
+        <div class="chip-row small">
+          <span class="chip" onclick="askQuick('What courses do you offer related to Cloud Computing?')">Courses</span>
+          <span class="chip" onclick="askQuick('What are the placement prospects for cloud-certified students?')">Placements</span>
+          <span class="chip" onclick="askQuick('How do I check my exam schedule?')">Exams</span>
+          <span class="chip" onclick="askQuick('What is the fee structure?')">Fees</span>
+        </div>
+
+        <div id="chatbox">
+          {% if history %}
+            {% for turn in history %}
+              {% if turn.role == "user" %}
+                <div class="msg-row user"><div class="bubble">{{ turn.content }}</div></div>
+              {% else %}
+                <div class="msg-row bot"><div class="bubble">{{ turn.content | safe }}</div></div>
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            <div class="msg-row bot">
+              <div class="bubble">
+                <p>Hi! I'm your Student Support assistant. Ask me anything about admissions, exams, fees, courses or placements.</p>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="input-row">
+          <input
+            type="text"
+            id="message"
+            placeholder="Ask your question"
+            onkeydown="handleEnter(event)"
+          >
+          <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+
+function addUserMessage(text) {
+  const chatbox = document.getElementById("chatbox");
+  const row = document.createElement("div");
+  row.className = "msg-row user";
+  row.innerHTML = `<div class="bubble">${escapeHtml(text)}</div>`;
+  chatbox.appendChild(row);
+}
+
+function addBotTyping() {
+  const chatbox = document.getElementById("chatbox");
+  const row = document.createElement("div");
+  row.className = "msg-row bot";
+  row.id = "typing-row";
+  row.innerHTML = `<div class="bubble"><span class="typing"><span></span><span></span><span></span></span></div>`;
+  chatbox.appendChild(row);
+  chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+function replaceTypingWithReply(html) {
+  const row = document.getElementById("typing-row");
+  if (row) {
+    row.removeAttribute("id");
+    row.innerHTML = `<div class="bubble">${html}</div>`;
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.innerText = str;
+  return div.innerHTML;
+}
+
+async function sendMessage(prefilled){
+  const input = document.getElementById("message");
+  const message = (prefilled !== undefined ? prefilled : input.value).trim();
+
+  if (message === "") return;
+
+  const chatbox = document.getElementById("chatbox");
+
+  addUserMessage(message);
+  input.value = "";
+  chatbox.scrollTop = chatbox.scrollHeight;
+
+  addBotTyping();
+
+  try {
+    const response = await fetch("/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: message })
+    });
+
+    if (response.status === 401) {
+      window.location.href = "{{ url_for('login') }}";
+      return;
+    }
+
+    const data = await response.json();
+    replaceTypingWithReply(data.reply);
+  } catch (err) {
+    replaceTypingWithReply("Sorry, something went wrong. Please try again.");
+  }
+
+  chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+function askQuick(text) {
+  sendMessage(text);
+}
+
+function handleEnter(event) {
+  if (event.key === "Enter") {
+    sendMessage();
+  }
+}
+
+async function clearChat(event) {
+  event.preventDefault();
+  if (!confirm("Clear this conversation? This can't be undone.")) return;
+
+  try {
+    await fetch("/chat/clear", { method: "POST" });
+  } catch (err) {
+    // ignore network errors, still clear the view
+  }
+
+  document.getElementById("chatbox").innerHTML = `
+    <div class="msg-row bot">
+      <div class="bubble">
+        <p>Hi! I'm your Student Support assistant. Ask me anything about admissions, exams, fees, courses or placements.</p>
+      </div>
+    </div>`;
+}
+
+// scroll to the latest message on page load (in case history was restored)
+window.addEventListener("DOMContentLoaded", () => {
+  const chatbox = document.getElementById("chatbox");
+  chatbox.scrollTop = chatbox.scrollHeight;
+});
+</script>
+
+</body>
+</html>
